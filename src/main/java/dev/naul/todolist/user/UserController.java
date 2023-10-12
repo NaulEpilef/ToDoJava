@@ -30,7 +30,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Não foi possível salvar a senha, tente novamente mais tarde.");
         }
 
-        // userModel.setPassword(hashedPass);
+        userModel.setPassword(hashedPass);
 
         var userCreated = this.userRepository.save(userModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);

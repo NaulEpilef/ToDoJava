@@ -25,6 +25,14 @@ public class FilterTaskAuth extends OncePerRequestFilter {
             throws ServletException, IOException {
         // TODO Auto-generated method stub
 
+        if (request.getServletPath().equals("/h2-console")) {
+            filterChain.doFilter(request, response);
+            return;
+        } else if (request.getServletPath().equals("/users")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         var auth = request.getHeader("Authorization");
         var authBase64 = auth.replace("Basic", "").trim();
 
@@ -44,9 +52,11 @@ public class FilterTaskAuth extends OncePerRequestFilter {
             var passwordVerify = BCrypt.verifyer().verify(password.toCharArray(), user.getPassword());
             
             if (passwordVerify.verified) {
+                request.setAttribute("userId", user.getId());
                 filterChain.doFilter(request, response);
+                return;
             } else {
-            response.sendError(401);
+                response.sendError(401);
             }
         }
         
