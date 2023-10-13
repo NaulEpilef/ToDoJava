@@ -1,5 +1,6 @@
 package dev.naul.todolist.task;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,18 @@ public class TaskController {
     public ResponseEntity create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
         var userId = request.getAttribute("userId");
         taskModel.setUserId((UUID) userId);
+
+        var currentDate = LocalDateTime.now();
+
+        if (currentDate.isAfter(taskModel.getStartTime()) || currentDate.isAfter(taskModel.getFinishTime())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de início ou data de término deve ser maior que a data atual.");
+        }
+
+        if (taskModel.getStartTime().isAfter(taskModel.getFinishTime())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de início deve vir depois da data de fim.");
+        }
+
         var task = this.taskRepository.save(taskModel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(task);
+        return ResponseEntity.status(HttpStatus.OK).body(task);
     }
 }
