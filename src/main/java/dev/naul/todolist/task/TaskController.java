@@ -38,19 +38,22 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de início deve vir depois da data de fim'.");
         }
 
+        System.out.println("BEFORE SAVE");
+        System.out.println(taskModel.getTitle());
         var task = this.taskRepository.save(taskModel);
         return ResponseEntity.status(HttpStatus.OK).body(task);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateById(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id) {
-        var task = this.taskRepository.findById(id).orElse(null);
+        var userId = (UUID) request.getAttribute("userId");
+        var task = this.taskRepository.findByIdAndUserId(id, userId);
 
-        System.out.println(task);
-        System.out.println(taskModel);
+        if (!task.equals(null)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tarefa não encontrada!");
+        }
 
         Utils.copyNonNullProperties(taskModel, task);
-        System.out.println(taskModel);
 
         var taskUpdated = this.taskRepository.save(task);
 
