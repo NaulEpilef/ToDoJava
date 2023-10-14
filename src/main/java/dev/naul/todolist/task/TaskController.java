@@ -37,9 +37,7 @@ public class TaskController {
         if (taskModel.getStartTime().isAfter(taskModel.getFinishTime())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de início deve vir depois da data de fim'.");
         }
-
-        System.out.println("BEFORE SAVE");
-        System.out.println(taskModel.getTitle());
+        
         var task = this.taskRepository.save(taskModel);
         return ResponseEntity.status(HttpStatus.OK).body(task);
     }
